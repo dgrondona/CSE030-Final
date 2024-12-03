@@ -8,6 +8,7 @@
 using namespace std;
 
 // Ask human to input their move
+// !! Make sure to check if move is valid !!
 Vec askHuman(GameState game) {
     int x, y;
     cout << "Enter coordinates (" << (game.currentTurn ? "O" : "X") << "): ";
@@ -28,6 +29,17 @@ Vec simpleAI(GameState game) {
     }
 
     return Vec(0,0);
+
+}
+
+// Main AI using MiniMax algorithm.
+Vec mainAI(Vertex<GameState>* gameState) {
+
+    Vec move = bestMove(gameState, 0); // update to take max player later
+
+
+    return Vec(move.x, move.y);
+    // gameState->data.play(move.x, move.y);
 
 }
 
@@ -71,19 +83,30 @@ int main(){
 
                         // Add this child to the list of vertices to expand
                         toExpand.append(u);
-                        // cout << u << endl;
 
                     }
                 }
             }
 
+
         }
+
+        cout << game << endl;
+
+        Vec AI = mainAI(v);
+        game.play(AI.x, AI.y);
+
+        cout << game << endl;
+
+        Vec human = askHuman(game);
+        game.play(human.x, human.y);
         
     }
 
+
+
     // system("clear");
     // cout << game << endl;
-
     // if (game.hasWon(0)){
     //     cout << "X wins" << endl;
     // }
@@ -93,6 +116,7 @@ int main(){
     // else {
     //     cout << "It's a tie" << endl;
     // }
+    // 
     // cout << endl;
     
     return 0;
