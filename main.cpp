@@ -137,7 +137,14 @@ int main(){
 
         if (!game.done) {
             Vec human = askHuman(game);
-            game.play(human.x, human.y);
+
+            while(!game.play(human.x, human.y)) {
+
+                cout << "Invalid Move! Try again buddy" << endl;
+                human = askHuman(game);
+
+            }
+
             current = getCurrent(current, human);
         }
 
