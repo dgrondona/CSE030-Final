@@ -115,6 +115,82 @@ Vertex<GameState>* buildTree(GameState game) {
 
 }
 
+struct Options {
+
+    bool player0;
+    bool player1;
+
+    Options() {
+
+        player0 = 0;
+        player1 = 0;
+
+    }
+
+    Options(bool player0, bool player1) {
+
+        this->player0 = player0;
+        this->player1 = player1;
+
+    }
+
+    void set(bool player0, bool player1) {
+
+        this->player0 = player0;
+        this->player1 = player1;
+
+    }
+
+};
+
+// menu for choosing different game options
+void menu() {
+
+    Options options;
+    int option;
+
+    cout << "Hello and Welcome to Tic-Tac-Toe!" << endl;
+    cout << endl;
+    cout << "Game Options:" << endl;
+    cout << "1. start game" << endl;
+    cout << "2. change players" << endl;
+
+    cout << endl;
+
+    cout << "Select an Option:  ";
+    cin >> option;
+    cout << endl;
+
+    if (option == 1) { // start the game
+
+        return;
+
+    } else if (option == 2) { // change player bool in options
+
+        bool player0 = 0;
+        bool player1 = 0;
+
+        cout << "0 - Human" << endl;
+        cout << "1 - AI" << endl;
+        cout << endl;
+
+        cout << "Player 1: ";
+        cin >> player0;
+
+        cout << endl;
+
+        cout << "Player 2: ";
+        cin >> player1;
+
+        options.player0 = player0;
+        options.player1 = player1;
+
+        menu(); // call the menu recursively
+
+    }
+
+}
+
 int main(){
 
     // Setup game tree (Graph<GameState> g)
@@ -122,6 +198,8 @@ int main(){
 
     Vertex<GameState>* current = buildTree(game);
     game = current->data;
+
+    menu(); // run the menu
 
     while (!game.done) {
 
