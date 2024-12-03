@@ -7,17 +7,7 @@
 
 using namespace std;
 
-// Graph<GameState> buildGraph(GameState game) {
-// 
-//     Graph<GameState> g;
-// 
-//     Vertex<GameState>* start = new Vertex<GameState>(game);
-//     g.addVertex(start);
-// 
-//     LinkedList<Vertex<GameState>*> toExpand;
-//     toExpand.append(start);
-// 
-// }
+
 
 Vertex<GameState>* getCurrent(Vertex<GameState>* current, Vec move) {
 
@@ -73,10 +63,7 @@ Vec mainAI(Vertex<GameState>* gameState) {
 
 }
 
-int main(){
-
-    // Setup game tree (Graph<GameState> g)
-    GameState game;
+Vertex<GameState>* buildTree(GameState game) {
 
     Graph<GameState> g;
 
@@ -88,7 +75,7 @@ int main(){
     LinkedList<Vertex<GameState>*> toExpand;
     toExpand.append(start);
 
-    // game loop
+    // build tree
     while (!game.done && !toExpand.isEmpty()){
 
         // remove first vertex
@@ -124,7 +111,16 @@ int main(){
         
     }
 
-    Vertex<GameState>* current = start;
+    return start;
+
+}
+
+int main(){
+
+    // Setup game tree (Graph<GameState> g)
+    GameState game;
+
+    Vertex<GameState>* current = buildTree(game);
     game = current->data;
 
     while (!game.done) {
