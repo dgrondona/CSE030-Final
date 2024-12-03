@@ -190,23 +190,27 @@ int main(){
 
     Options options;
 
-    Vertex<GameState>* current = buildTree(game);
+    Vertex<GameState>* current = buildTree(game); // current vertex is outputted by the buildTree function.
     game = current->data;
 
     menu(options); // run the menu
 
-    while (!game.done) {
+    while (!game.done) { // main game loop
 
+        // initialize Vec for both players
         Vec player0;
         Vec player1;
 
+        // determine if player is human or AI
         if (options.player0) {
 
             player0 = mainAI(current);
 
+            game.play(player0.x, player0.y);
+
         } else {
 
-            cout << game << endl;
+            cout << game << endl; // only output the game before human's turn   !! make sure to update for case where there are 2 AIs !!
 
             player0 = askHuman(game);
 
@@ -220,22 +224,25 @@ int main(){
 
         }
 
-        game.play(player0.x, player0.y);
         current = getCurrent(current, player0);
 
+        // check if the game is terminal or not
         if (!game.done) {
 
-            if (options.player0) {
+            // determine if player is human or AI
+            if (options.player1) {
 
                 player0 = mainAI(current);
 
+                game.play(player1.x, player1.y);
+
             } else {
 
-                cout << game << endl;
+                cout << game << endl; // only output the game before human's turn
 
-                player0 = askHuman(game);
+                player1 = askHuman(game);
 
-                while(!game.play(player0.x, player0.y)) {
+                while(!game.play(player1.x, player1.y)) {
 
                     cout << "Invalid Move! Try again buddy" << endl;
 
@@ -245,23 +252,32 @@ int main(){
 
             }
 
-            game.play(player0.x, player0.y);
-            current = getCurrent(current, player0);
+            current = getCurrent(current, player1);
 
         }
 
     }
 
+    // clear terminal
     system("clear");
+
     cout << game << endl;
+
+    // announce who won once game loop ends
     if (game.hasWon(0)){
+
         cout << "X wins" << endl;
+
     }
     else if (game.hasWon(1)){
+
         cout << "O wins" << endl;
+
     }
     else {
+
         cout << "It's a tie" << endl;
+
     }
     
     cout << endl;
