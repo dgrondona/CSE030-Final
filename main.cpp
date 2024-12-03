@@ -1,38 +1,84 @@
 #include <iostream>
 #include "GameState.h"
+#include "Graph.h"
+#include "LinkedList.h"
 
 
 using namespace std;
+
+Vec askHuman(GameState game) {
+    int x, y;
+    cout << "Enter coordinates (" << (game.currentTurn ? "O" : "X") << "): ";
+    cin >> x >> y;
+
+    return Vec(x, y);
+}
+
+
+Vec simpleAI(GameState game) {
+
+    for (int i = 0; i < game.size; i++) {
+        for (int j = 0; j < game.size; j++) {
+            if(game.play(i,j)) {
+                return Vec(i,j);
+            }
+        }
+    }
+
+    return Vec(0,0);
+
+}
 
 int main(){
 
     GameState game;
 
+    Graph<GameState> g;
+
+    Vertex<GameState>* start = new Vertex<GameState>(game);
+    g.addVertex(start);
+
+    LinkedList<Vertex<GameState>*> toExpand;
+    toExpand.append(start);
+
     while (!game.done){
-        system("clear");
-        cout << game << endl;
+        Vertex<GameState>* v = toExpand.removeFirst();
 
-        int x, y;
+        if(!v->data.done) {
 
-        cout << "Enter coordinates (" << (game.currentTurn ? "O" : "X") << "): ";
-        cin >> x >> y;
+            for (int i = 0; i < game.size; i++) {
+                for (int j = 0; j < game.size; j++) {
+                    GameState temp = v->data;
+                    bool valid = temp.play(i, j);
+                    if (valid) {
+                        // This was a valid move, so we can create a child vertex
+                        Vertex<GameState>* u = new Vertex<GameState>(temp);
+                        g.addVertex(u);
+                        g.addDirectedEdge(v,u,0);
+                        // Add this child to the list of vertices to expand
+                        toExpand.append(u);
+                        cout << u << endl;
+                    }
+                }
+            }
 
-        game.play(x, y);
+        }
+        
     }
 
-    system("clear");
-    cout << game << endl;
+    // system("clear");
+    // cout << game << endl;
 
-    if (game.hasWon(0)){
-        cout << "X wins" << endl;
-    }
-    else if (game.hasWon(1)){
-        cout << "O wins" << endl;
-    }
-    else {
-        cout << "It's a tie" << endl;
-    }
-    cout << endl;
+    // if (game.hasWon(0)){
+    //     cout << "X wins" << endl;
+    // }
+    // else if (game.hasWon(1)){
+    //     cout << "O wins" << endl;
+    // }
+    // else {
+    //     cout << "It's a tie" << endl;
+    // }
+    // cout << endl;
     
     return 0;
 }
