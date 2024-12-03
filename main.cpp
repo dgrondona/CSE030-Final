@@ -6,6 +6,7 @@
 
 using namespace std;
 
+// Ask human to input their move
 Vec askHuman(GameState game) {
     int x, y;
     cout << "Enter coordinates (" << (game.currentTurn ? "O" : "X") << "): ";
@@ -14,7 +15,7 @@ Vec askHuman(GameState game) {
     return Vec(x, y);
 }
 
-
+// Simple AI that plays in the first open space :: remove after testing
 Vec simpleAI(GameState game) {
 
     for (int i = 0; i < game.size; i++) {
@@ -31,21 +32,30 @@ Vec simpleAI(GameState game) {
 
 int main(){
 
+
+    // Setup game tree (Graph<GameState> g)
     GameState game;
 
     Graph<GameState> g;
 
+    // Set the starting game state called "start"
     Vertex<GameState>* start = new Vertex<GameState>(game);
     g.addVertex(start);
 
+    // Initialize LinkedList to manage vertices
     LinkedList<Vertex<GameState>*> toExpand;
     toExpand.append(start);
 
+    // game loop
     while (!game.done){
+
+        // remove first vertex
         Vertex<GameState>* v = toExpand.removeFirst();
 
+        // if vertex represents an ongoing game state
         if(!v->data.done) {
 
+            // explore possible moves from current state
             for (int i = 0; i < game.size; i++) {
                 for (int j = 0; j < game.size; j++) {
                     GameState temp = v->data;
