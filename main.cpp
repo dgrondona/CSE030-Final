@@ -134,19 +134,11 @@ struct Options {
 
     }
 
-    void set(bool player0, bool player1) {
-
-        this->player0 = player0;
-        this->player1 = player1;
-
-    }
-
 };
 
 // menu for choosing different game options
-void menu() {
+void menu(Options options) {
 
-    Options options;
     int option;
 
     cout << "Hello and Welcome to Tic-Tac-Toe!" << endl;
@@ -185,7 +177,7 @@ void menu() {
         options.player0 = player0;
         options.player1 = player1;
 
-        menu(); // call the menu recursively
+        menu(options); // call the menu recursively
 
     }
 
@@ -196,35 +188,69 @@ int main(){
     // Setup game tree (Graph<GameState> g)
     GameState game;
 
+    Options options;
+
     Vertex<GameState>* current = buildTree(game);
     game = current->data;
 
-    menu(); // run the menu
+    menu(options); // run the menu
 
     while (!game.done) {
 
-        Vec AI = mainAI(current);
-        game.play(AI.x, AI.y);
-        current = getCurrent(current, AI);
+        Vec player0;
+        Vec player1;
 
-        cout << game << endl;
+        if (options.player0) {
 
-        if (!game.done) {
-            Vec human = askHuman(game);
+            player0 = mainAI(current);
 
-            while(!game.play(human.x, human.y)) {
+        } else {
+
+            cout << game << endl;
+
+            player0 = askHuman(game);
+
+            while(!game.play(player0.x, player0.y)) {
 
                 cout << "Invalid Move! Try again buddy" << endl;
-                human = askHuman(game);
+
+                player0 = askHuman(game);
 
             }
 
-            current = getCurrent(current, human);
+        }
+
+        game.play(player0.x, player0.y);
+        current = getCurrent(current, player0);
+
+        if (!game.done) {
+
+            if (options.player0) {
+
+                player0 = mainAI(current);
+
+            } else {
+
+                cout << game << endl;
+
+                player0 = askHuman(game);
+
+                while(!game.play(player0.x, player0.y)) {
+
+                    cout << "Invalid Move! Try again buddy" << endl;
+
+                    player0 = askHuman(game);
+
+                }
+
+            }
+
+            game.play(player0.x, player0.y);
+            current = getCurrent(current, player0);
+
         }
 
     }
-
-
 
     system("clear");
     cout << game << endl;
