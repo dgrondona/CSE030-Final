@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+// Represents a a 2D coordinate
 struct Vec{
     int x;
     int y;
@@ -23,16 +24,21 @@ struct Vec{
     }
 };
 
+// Enable printing formatted (x, y) coordinates with overload operator
 inline std::ostream& operator<<(std::ostream& os, const Vec& v){
     os << "(" << v.x << ", " << v.y << ")";
 
     return os;
 }
 
+// Forward declaration of GameState struct for overload operator
 struct GameState;
 std::ostream& operator<<(std::ostream& os, const GameState& state);
 
+// Represents the state of the game
 struct GameState{
+
+    // Initialize grid, currentTurn, size, turnCount, done, and lastMove to use later in struct
     int** grid;
     bool currentTurn;
     int size;
@@ -41,6 +47,7 @@ struct GameState{
     bool done;
     Vec lastMove;
 
+    // Constructor
     GameState(int size = 3){
         this->size = size;
         currentTurn = 0;
@@ -49,6 +56,7 @@ struct GameState{
 
         lastMove.set(-1, -1);
 
+        // Allocate memory for 2D grid and initialize cells to empty (-1)
         grid = new int*[size];
 
         for (int i = 0; i < size; i++){
@@ -59,6 +67,7 @@ struct GameState{
         }
     }
 
+    // Copy constructor
     GameState(const GameState& other){
         size = other.size;
         currentTurn = other.currentTurn;
@@ -76,6 +85,7 @@ struct GameState{
         }
     }
 
+    // Overload operator for comparing two GameState objects
     bool operator==(const GameState& other){
         bool sizeMatch = size == other.size;
         bool currentTurnMatch = currentTurn == other.currentTurn;
@@ -99,6 +109,7 @@ struct GameState{
         }
     }
 
+    // For deep copying another GameState
     GameState& operator=(const GameState& other){
         currentTurn = other.currentTurn;
         turnCount = other.turnCount;
@@ -132,6 +143,7 @@ struct GameState{
         return *this;
     }
 
+    // Check if specific player has won
     bool hasWon(int player){
         for (int i = 0; i < size; i++){
             bool winRow = true;
@@ -183,7 +195,7 @@ struct GameState{
         return false;
     }
 
-
+    // Play a move at the given position
     bool play(int x, int y){
         if (grid[x][y] != -1){
             return false;
@@ -204,6 +216,7 @@ struct GameState{
         return true;
     }
 
+    // Destructor
     ~GameState(){
         for (int i = 0; i < size; i++){
             delete[] grid[i];
@@ -212,6 +225,7 @@ struct GameState{
     }
 };
 
+// Overload operator to display the board on screen
 inline std::ostream& operator<<(std::ostream& os, const GameState& state){
     os << "   ";
     for (int j = 0; j < state.size; j++){
