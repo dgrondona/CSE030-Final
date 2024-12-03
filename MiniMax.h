@@ -94,6 +94,8 @@ Vec bestMove(Vertex<GameState>* v, int maxPlayer) {
 
     }
 
+    std::cout << bestState->data.lastMove << std::endl;
+
     return bestState->data.lastMove;
 
 }
