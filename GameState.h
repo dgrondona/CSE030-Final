@@ -22,6 +22,20 @@ struct Vec{
         this->x = x;
         this->y = y;
     }
+
+    // Overload == for comparing Vec
+    bool operator==(const Vec& other){
+
+        if (this->x == other.x && this->y == other.y) {
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
 };
 
 // Enable printing formatted (x, y) coordinates with overload operator
