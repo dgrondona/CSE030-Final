@@ -2,6 +2,7 @@
 #include "GameState.h"
 #include "Graph.h"
 #include "LinkedList.h"
+#include "MiniMax.h"
 
 
 using namespace std;
@@ -56,7 +57,7 @@ int main(){
 
             // explore possible moves from current state
             for (int i = 0; i < game.size; i++) {
-                
+
                 for (int j = 0; j < game.size; j++) {
 
                     GameState temp = v->data;
@@ -70,7 +71,7 @@ int main(){
 
                         // Add this child to the list of vertices to expand
                         toExpand.append(u);
-                        cout << u << endl;
+                        // cout << u << endl;
 
                     }
                 }
