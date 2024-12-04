@@ -7,8 +7,7 @@
 
 using namespace std;
 
-
-
+// update the current game state pointer
 Vertex<GameState>* getCurrent(Vertex<GameState>* current, Vec move) {
 
     for (int i = 0; i < current->edgeList.size(); i++) {
@@ -115,19 +114,25 @@ Vertex<GameState>* buildTree(GameState game) {
 
 }
 
+enum playerType{
+
+    HUMAN, AI, INVALID_PLAYER
+
+};
+
 struct Options {
 
-    bool player0;
-    bool player1;
+    int player0;
+    int player1;
 
     Options() {
 
-        player0 = 0;
-        player1 = 0;
+        player0 = HUMAN;
+        player1 = HUMAN;
 
     }
 
-    Options(bool player0, bool player1) {
+    Options(int player0, int player1) {
 
         this->player0 = player0;
         this->player1 = player1;
@@ -162,40 +167,35 @@ void menu() {
 
     } else if (option == 2) { // change player bool in options
 
-        int player0 = 0;
-        int player1 = 0;
+        // set values for player 0 and 1 to invalid
+        int player0 = INVALID_PLAYER;
+        int player1 = INVALID_PLAYER;
 
-        cout << "0 - Human" << endl;
-        cout << "1 - AI" << endl;
+        cout << HUMAN << " - Human" << endl;
+        cout << AI << " - AI" << endl;
         cout << endl;
 
-        cout << "Player 1: ";
-        cin >> player0;
+        // ask player to input player type until they enter in a valid number
+        while(player0 >= INVALID_PLAYER || player0 < 0) {
 
-        cout << endl;
-
-        cout << "Player 2: ";
-        cin >> player1;
-
-        if (player0 == 1) {
-
-            options.player0 = 1;
-
-        } else {
-
-            options.player0 = 0;
+            cout << "Player 1: ";
+            cin >> player0;
 
         }
 
-        if (player1 == 1) {
+        cout << endl;
 
-            options.player1 = 1;
+        // ask player to input player type until they enter in a valid number
+        while(player1 >= INVALID_PLAYER || player1 < 0) {
 
-        } else {
-
-            options.player1 = 0;
+            cout << "Player 2: ";
+            cin >> player1;
 
         }
+
+        // update options
+        options.player0 = player0;
+        options.player1 = player1;
 
         menu(); // call the menu recursively
 
