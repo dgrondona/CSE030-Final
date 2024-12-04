@@ -5,3 +5,5 @@
     - [ ] Print game one per round in CvC. Otherwise only before human player's turn.
 - [ ] Different AI Difficulties
 - [ ] Different Game Sizes
+
+- [ ] Fix all issues with putting in unexpected values

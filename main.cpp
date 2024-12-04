@@ -29,9 +29,30 @@ Vertex<GameState>* getCurrent(Vertex<GameState>* current, Vec move) {
 // Ask human to input their move
 // !! Make sure to check if move is valid !!
 Vec askHuman(GameState game) {
+
+    std::string a;
+    std::string b;
     int x, y;
-    cout << "Enter coordinates (" << (game.currentTurn ? "O" : "X") << "): ";
-    cin >> x >> y;
+
+    while(true) {
+
+        cout << "Enter coordinates (" << (game.currentTurn ? "O" : "X") << "): ";
+        cin >> a >> b;
+
+        try {
+
+            x = std::stoi(a);
+            y = std::stoi(b);
+
+            break;
+
+        } catch (std::exception& ex) {
+
+            cerr << "Invalid Coordinates" << endl;
+
+        }
+
+    }
 
     return Vec(x, y);
 }
@@ -56,9 +77,7 @@ Vec mainAI(Vertex<GameState>* gameState, int maxPlayer) {
 
     Vec move = bestMove(gameState, maxPlayer); // update to take max player later
 
-
     return move;
-    // gameState->data.play(move.x, move.y);
 
 }
 
@@ -147,7 +166,8 @@ Options options;
 // menu for choosing different game options
 void menu() {
 
-    int option;
+    std::string option;
+    int optNum;
 
     cout << "Hello and Welcome to Tic-Tac-Toe!" << endl;
     cout << endl;
@@ -158,14 +178,23 @@ void menu() {
     cout << endl;
 
     cout << "Select an Option:  ";
+
     cin >> option;
+
+    try {
+
+        optNum = std::stoi(option);
+
+    } catch(std::exception& ex) {
+
+        cerr << "Invalid Option. Starting Game." << endl;
+        optNum = 1;
+
+    }
+
     cout << endl;
 
-    if (option == 1) { // start the game
-
-        return;
-
-    } else if (option == 2) { // change player bool in options
+    if (optNum == 2) { // change player bool in options
 
         // set values for player 0 and 1 to invalid
         int player0 = INVALID_PLAYER;
@@ -198,6 +227,10 @@ void menu() {
         options.player1 = player1;
 
         menu(); // call the menu recursively
+
+    } else {
+
+        return;
 
     }
 
