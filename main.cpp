@@ -160,11 +160,8 @@ struct Options {
 
 };
 
-// declare options
-Options options;
-
 // menu for choosing different game options
-void menu() {
+void menu(Options &options) {
 
     std::string option;
     int optNum;
@@ -226,7 +223,7 @@ void menu() {
         options.player0 = player0;
         options.player1 = player1;
 
-        menu(); // call the menu recursively
+        menu(options); // call the menu recursively
 
     } else {
 
@@ -238,13 +235,15 @@ void menu() {
 
 int main(){
 
+    Options options;
+
     // Setup game tree (Graph<GameState> g)
     GameState game;
 
     Vertex<GameState>* current = buildTree(game); // current vertex is outputted by the buildTree function.
     game = current->data;
 
-    menu(); // run the menu
+    menu(options); // run the menu
 
     while (!game.done) { // main game loop
 
@@ -253,13 +252,13 @@ int main(){
         Vec player1;
 
         // determine if player is human or AI
-        if (options.player0) {
+        if (options.player0 == AI) {
 
             player0 = mainAI(current, 0);
 
             game.play(player0.x, player0.y);
 
-        } else {
+        } else if (options.player0 == HUMAN) {
 
             cout << game << endl; // only output the game before human's turn   !! make sure to update for case where there are 2 AIs !!
 
