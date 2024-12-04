@@ -53,9 +53,9 @@ Vec simpleAI(GameState game) {
 }
 
 // Main AI using MiniMax algorithm.
-Vec mainAI(Vertex<GameState>* gameState) {
+Vec mainAI(Vertex<GameState>* gameState, int maxPlayer) {
 
-    Vec move = bestMove(gameState, 0); // update to take max player later
+    Vec move = bestMove(gameState, maxPlayer); // update to take max player later
 
 
     return move;
@@ -136,8 +136,11 @@ struct Options {
 
 };
 
+// declare options
+Options options;
+
 // menu for choosing different game options
-void menu(Options options) {
+void menu() {
 
     int option;
 
@@ -159,8 +162,8 @@ void menu(Options options) {
 
     } else if (option == 2) { // change player bool in options
 
-        bool player0 = 0;
-        bool player1 = 0;
+        int player0 = 0;
+        int player1 = 0;
 
         cout << "0 - Human" << endl;
         cout << "1 - AI" << endl;
@@ -174,10 +177,27 @@ void menu(Options options) {
         cout << "Player 2: ";
         cin >> player1;
 
-        options.player0 = player0;
-        options.player1 = player1;
+        if (player0 == 1) {
 
-        menu(options); // call the menu recursively
+            options.player0 = 1;
+
+        } else {
+
+            options.player0 = 0;
+
+        }
+
+        if (player1 == 1) {
+
+            options.player1 = 1;
+
+        } else {
+
+            options.player1 = 0;
+
+        }
+
+        menu(); // call the menu recursively
 
     }
 
@@ -188,12 +208,10 @@ int main(){
     // Setup game tree (Graph<GameState> g)
     GameState game;
 
-    Options options;
-
     Vertex<GameState>* current = buildTree(game); // current vertex is outputted by the buildTree function.
     game = current->data;
 
-    menu(options); // run the menu
+    menu(); // run the menu
 
     while (!game.done) { // main game loop
 
@@ -204,7 +222,7 @@ int main(){
         // determine if player is human or AI
         if (options.player0) {
 
-            player0 = mainAI(current);
+            player0 = mainAI(current, 0);
 
             game.play(player0.x, player0.y);
 
@@ -232,7 +250,7 @@ int main(){
             // determine if player is human or AI
             if (options.player1) {
 
-                player0 = mainAI(current);
+                player1 = mainAI(current, 1);
 
                 game.play(player1.x, player1.y);
 
@@ -246,7 +264,7 @@ int main(){
 
                     cout << "Invalid Move! Try again buddy" << endl;
 
-                    player0 = askHuman(game);
+                    player1 = askHuman(game);
 
                 }
 
