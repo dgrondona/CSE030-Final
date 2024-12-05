@@ -23,7 +23,7 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -15, int
         // Game ends in tie.
         } else {
 
-            return 0
+            return 0;
 
         }
 
@@ -43,7 +43,7 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -15, int
             Vertex<GameState>* child = v->edgeList[i]->to;
 
             // Score is set to the max between the current score and the best score from running minimax again.
-            score = std::max(score, minimax(child, maxPlayer, depth++, a, b));
+            score = std::max(score, minimax(child, maxPlayer, depth + 1, a, b));
 
             if (score > b) {
 
@@ -70,7 +70,7 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -15, int
             Vertex<GameState>* child = v->edgeList[i]->to;
 
             // We set score to the minimum between the current score and the score given by running minimax again
-            score = std::min(score, minimax(child, maxPlayer, depth++, a, b));
+            score = std::min(score, minimax(child, maxPlayer, depth + 1, a, b));
 
             if (score < a) {
 
@@ -99,7 +99,7 @@ Vec bestMove(Vertex<GameState>* v, int maxPlayer) {
         Vertex<GameState>* child = v->edgeList[i]->to;
         int score = minimax(child, maxPlayer);
 
-        std::cout << "score: " << score << std::endl;
+        //std::cout << "score: " << score << std::endl;
 
         // If this score is the best we've seen, set this child to our best state and update score.
         if (score > bestScore) {
