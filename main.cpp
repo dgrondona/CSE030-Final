@@ -245,6 +245,8 @@ int main(){
 
     menu(options); // run the menu
 
+    cout << game << endl;
+
     while (!game.done) { // main game loop
 
         // initialize Vec for both players
