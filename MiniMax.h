@@ -5,7 +5,7 @@
 #include "GameState.h"
 
 // Function runs recursively and returns the score of the game state.
-int minimax(Vertex<GameState>* v, int maxPlayer) {
+int minimax(Vertex<GameState>* v, int maxPlayer, int a = -2, int b = 2) {
 
     // If game state is terminal.
     if (v->data.done) {
@@ -45,6 +45,14 @@ int minimax(Vertex<GameState>* v, int maxPlayer) {
             // Score is set to the max between the current score and the best score from running minimax again.
             score = std::max(score, minimax(child, maxPlayer));
 
+            if (score > b) {
+
+                break;
+
+            }
+
+            a = std::max(a, score);
+
         }
 
         return score;
@@ -63,6 +71,14 @@ int minimax(Vertex<GameState>* v, int maxPlayer) {
 
             // We set score to the minimum between the current score and the score given by running minimax again
             score = std::min(score, minimax(child, maxPlayer));
+
+            if (score < a) {
+
+                break;
+
+            }
+
+            b = std::min(b, score);
 
         }
 
