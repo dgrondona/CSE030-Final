@@ -2,6 +2,7 @@
 #include "GameState.h"
 #include "Graph.h"
 #include "LinkedList.h"
+#include "Menu.h"
 #include "MiniMax.h"
 
 
@@ -75,7 +76,7 @@ Vec simpleAI(GameState game) {
 // Main AI using MiniMax algorithm.
 Vec mainAI(Vertex<GameState>* gameState, int maxPlayer) {
 
-    Vec move = bestMove(gameState, maxPlayer); // update to take max player later
+    Vec move = bestMove(gameState, maxPlayer);
 
     return move;
 
@@ -132,33 +133,6 @@ Vertex<GameState>* buildTree(GameState game) {
     return start;
 
 }
-
-enum playerType{
-
-    HUMAN, AI, INVALID_PLAYER
-
-};
-
-struct Options {
-
-    int player0;
-    int player1;
-
-    Options() {
-
-        player0 = HUMAN;
-        player1 = HUMAN;
-
-    }
-
-    Options(int player0, int player1) {
-
-        this->player0 = player0;
-        this->player1 = player1;
-
-    }
-
-};
 
 // menu for choosing different game options
 void menu(Options &options) {
@@ -240,10 +214,10 @@ int main(){
     // Setup game tree (Graph<GameState> g)
     GameState game;
 
+    menu(options); // run the menu
+
     Vertex<GameState>* current = buildTree(game); // current vertex is outputted by the buildTree function.
     game = current->data;
-
-    menu(options); // run the menu
 
     cout << game << endl;
 

@@ -4,8 +4,32 @@
 #include "Graph.h"
 #include "GameState.h"
 
+struct winLoss {
+
+    int winCount;
+    int lossCount;
+
+    winLoss() {
+
+        winCount = 0;
+        lossCount = 0;
+
+    }
+
+public:
+
+    void addWin() {
+        winCount++;
+    }
+
+    void addLoss() {
+        lossCount++;
+    }
+
+};
+
 // Function runs recursively and returns the score of the game state.
-int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -15, int b = 15) {
+int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -500, int b = 500) {
 
     // If game state is terminal.
     if (v->data.done) {
@@ -13,12 +37,12 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -15, int
         // If the max player has won (0 for X and 1 for O).
         if (v->data.hasWon(maxPlayer)) {
 
-            return 10 - depth; // penalize move score if it takes too long
+            return 100 - depth; // penalize move score if it takes too long
 
         // If the min player has won (opposite of the max player).
         } else if (v->data.hasWon(maxPlayer ? 0 : 1)) {
 
-            return -10;
+            return -100;
 
         // Game ends in tie.
         } else {
@@ -34,7 +58,7 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -15, int
 
         // Set score to a number lower than possible.
         // Any value will automatically be bigger than this.
-        int score = -15;
+        int score = -500;
 
         // Iterate through the edge list.
         for (int i = 0; i < v->edgeList.size(); i++) {
@@ -61,7 +85,7 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -15, int
     } else {
 
         // Set the score to a number higher than possible.
-        int score = 15;
+        int score = 500;
 
         // Iterate through the edges.
         for (int i = 0; i < v->edgeList.size(); i++) {
@@ -90,7 +114,7 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -15, int
 
 Vec bestMove(Vertex<GameState>* v, int maxPlayer) {
 
-    int bestScore = -15;
+    int bestScore = -500;
     Vertex<GameState>* bestState;
 
     // Iterate through all children.
