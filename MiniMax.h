@@ -5,7 +5,7 @@
 #include "GameState.h"
 
 // Function runs recursively and returns the score of the game state.
-int minimax(Vertex<GameState>* v, int maxPlayer, int a = -2, int b = 2) {
+int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -15, int b = 15) {
 
     // If game state is terminal.
     if (v->data.done) {
@@ -13,17 +13,17 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int a = -2, int b = 2) {
         // If the max player has won (0 for X and 1 for O).
         if (v->data.hasWon(maxPlayer)) {
 
-            return 1;
+            return 10 - depth; // penalize move score if it takes too long
 
         // If the min player has won (opposite of the max player).
         } else if (v->data.hasWon(maxPlayer ? 0 : 1)) {
 
-            return -1;
+            return -10;
 
         // Game ends in tie.
         } else {
 
-            return 0;
+            return 0
 
         }
 
@@ -34,7 +34,7 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int a = -2, int b = 2) {
 
         // Set score to a number lower than possible.
         // Any value will automatically be bigger than this.
-        int score = -2;
+        int score = -15;
 
         // Iterate through the edge list.
         for (int i = 0; i < v->edgeList.size(); i++) {
@@ -43,7 +43,7 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int a = -2, int b = 2) {
             Vertex<GameState>* child = v->edgeList[i]->to;
 
             // Score is set to the max between the current score and the best score from running minimax again.
-            score = std::max(score, minimax(child, maxPlayer));
+            score = std::max(score, minimax(child, maxPlayer, depth++, a, b));
 
             if (score > b) {
 
@@ -61,7 +61,7 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int a = -2, int b = 2) {
     } else {
 
         // Set the score to a number higher than possible.
-        int score = 2;
+        int score = 15;
 
         // Iterate through the edges.
         for (int i = 0; i < v->edgeList.size(); i++) {
@@ -70,7 +70,7 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int a = -2, int b = 2) {
             Vertex<GameState>* child = v->edgeList[i]->to;
 
             // We set score to the minimum between the current score and the score given by running minimax again
-            score = std::min(score, minimax(child, maxPlayer));
+            score = std::min(score, minimax(child, maxPlayer, depth++, a, b));
 
             if (score < a) {
 
@@ -90,7 +90,7 @@ int minimax(Vertex<GameState>* v, int maxPlayer, int a = -2, int b = 2) {
 
 Vec bestMove(Vertex<GameState>* v, int maxPlayer) {
 
-    int bestScore = -2;
+    int bestScore = -15;
     Vertex<GameState>* bestState;
 
     // Iterate through all children.
@@ -98,6 +98,8 @@ Vec bestMove(Vertex<GameState>* v, int maxPlayer) {
 
         Vertex<GameState>* child = v->edgeList[i]->to;
         int score = minimax(child, maxPlayer);
+
+        std::cout << "score: " << score << std::endl;
 
         // If this score is the best we've seen, set this child to our best state and update score.
         if (score > bestScore) {
@@ -109,8 +111,6 @@ Vec bestMove(Vertex<GameState>* v, int maxPlayer) {
         }
 
     }
-
-    std::cout << bestState->data.lastMove << std::endl;
 
     return bestState->data.lastMove;
 
