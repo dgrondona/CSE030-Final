@@ -81,7 +81,7 @@ public:
 
                     break;
 
-                } else {
+                } else if (this->type == AB_AI) {
 
                     a = std::max(a, score);
 
@@ -110,7 +110,7 @@ public:
 
                     break;
 
-                } else {
+                } else if (this->type == AB_AI) {
 
                     b = std::min(b, score);
 
