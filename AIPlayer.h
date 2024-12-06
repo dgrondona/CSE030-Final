@@ -39,13 +39,6 @@ public:
     // Function runs recursively and returns the score of the game state.
     int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -500, int b = 500) {
 
-        if (this->type == DEFAULT_AI) {
-
-            a = -500;
-            b = 500;
-
-        }
-
         // If game state is terminal.
         if (v->data.done) {
 
@@ -84,13 +77,15 @@ public:
                 // Score is set to the max between the current score and the best score from running minimax again.
                 score = std::max(score, minimax(child, maxPlayer, depth + 1, a, b));
 
-                if (score > b) {
+                if (score > b && this->type == AB_AI) {
 
                     break;
 
-                }
+                } else {
 
-                a = std::max(a, score);
+                    a = std::max(a, score);
+
+                }
 
             }
 
@@ -111,13 +106,15 @@ public:
                 // We set score to the minimum between the current score and the score given by running minimax again
                 score = std::min(score, minimax(child, maxPlayer, depth + 1, a, b));
 
-                if (score < a) {
+                if (score < a && this->type == AB_AI) {
 
                     break;
 
-                }
+                } else {
 
-                b = std::min(b, score);
+                    b = std::min(b, score);
+
+                }
 
             }
 
