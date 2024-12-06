@@ -16,10 +16,10 @@ class AIPlayer {
 
 private:
 
-    int type;
+    int type; // type of AI
 
-    int winCount;
-    int lossCount;
+    int winCount; // number of win conditions found
+    int lossCount; // number of loss conditions found
 
 public:
 
@@ -59,7 +59,7 @@ public:
                 if (this->type == DEFAULT_AI) {
 
                     this->winCount++;
-                    return 100 - depth; // penalize move score if it takes too long
+                    return 100 - depth;
 
                 } else {
 
@@ -76,12 +76,6 @@ public:
 
             // Game ends in tie.
             } else {
-
-                if (this->type == DEFAULT_AI) {
-
-                    return 0 + winCount;
-
-                }
 
                 return 0;
 
@@ -143,6 +137,18 @@ public:
                     b = std::min(b, score);
 
                 }
+
+            }
+
+            // score 100 is a win
+            if (score == 100 && this->type == DEFAULT_AI) {
+
+                return score - depth; // choose shortest path to win
+
+            // score 0 is a tie
+            } else if (score == 0 && this->type == DEFAULT_AI) {
+
+                return score + winCount; // prioritize children with more win conditions
 
             }
 
