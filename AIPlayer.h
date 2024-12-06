@@ -6,7 +6,9 @@
 
 enum AIType {
 
-    DEFAULT_AI, AB_AI, UNSET_AI
+    DEFAULT_AI, // choose path with most wins attached
+    AB_AI, // prune game tree branches that don't need to be traversed
+    UNSET_AI // nothing set
 
 };
 
@@ -49,12 +51,21 @@ public:
         // If game state is terminal.
         if (v->data.done) {
 
+            int score;
+
             // If the max player has won (0 for X and 1 for O).
             if (v->data.hasWon(maxPlayer)) {
 
-                this->winCount++;
+                if (this->type == DEFAULT_AI) {
 
-                return 100 - depth; // penalize move score if it takes too long
+                    this->winCount++;
+                    return 100 - depth; // penalize move score if it takes too long
+
+                } else {
+
+                    return 100;
+
+                }
 
             // If the min player has won (opposite of the max player).
             } else if (v->data.hasWon(maxPlayer ? 0 : 1)) {
@@ -66,7 +77,13 @@ public:
             // Game ends in tie.
             } else {
 
-                return 0 + winCount;;
+                if (this->type == DEFAULT_AI) {
+
+                    return 0 + winCount;
+
+                }
+
+                return 0;
 
             }
 
