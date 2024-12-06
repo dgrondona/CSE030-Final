@@ -27,8 +27,6 @@ private:
     int winCount; // number of win conditions found
     int lossCount; // number of loss conditions found
 
-    int depth;
-
 public:
 
     AIPlayer() {
@@ -37,8 +35,6 @@ public:
 
         winCount = 0;
         lossCount = 0;
-
-        depth = 0;
 
     }
 
@@ -56,7 +52,7 @@ public:
     }
 
     // Function runs recursively and returns the score of the game state.
-    int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = ALPHA, int b = BETA) {
+    int minimax(Vertex<GameState>* v, int maxPlayer, int a = ALPHA, int b = BETA, int depth = 0) {
 
         // If game state is terminal.
         if (v->data.done) {
@@ -67,6 +63,12 @@ public:
             if (v->data.hasWon(maxPlayer)) {
 
                 this->winCount++;
+
+                if (this->type == DEFAULT_AI || this->type == MOSTLOSS) {
+
+                    return MAXSCORE - depth;
+
+                }
 
                 return MAXSCORE;
 
@@ -100,7 +102,7 @@ public:
                 Vertex<GameState>* child = v->edgeList[i]->to;
 
                 // Score is set to the max between the current score and the best score from running minimax again.
-                score = std::max(score, minimax(child, maxPlayer, depth + 1, a, b));
+                score = std::max(score, minimax(child, maxPlayer, a, b, depth + 1));
 
                 if (score > b && this->type == AB_AI) {
 
@@ -129,7 +131,7 @@ public:
                 Vertex<GameState>* child = v->edgeList[i]->to;
 
                 // We set score to the minimum between the current score and the score given by running minimax again
-                score = std::min(score, minimax(child, maxPlayer, depth + 1, a, b));
+                score = std::min(score, minimax(child, maxPlayer, a, b, depth + 1));
 
                 if (score < a && this->type == AB_AI) {
 
