@@ -39,7 +39,7 @@ public:
     // Function runs recursively and returns the score of the game state.
     int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -500, int b = 500) {
 
-        if (type == DEFAULT_AI) {
+        if (this->type == DEFAULT_AI) {
 
             a = -500;
             b = 500;
