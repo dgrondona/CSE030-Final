@@ -28,114 +28,149 @@ public:
 
 };
 
-// Function runs recursively and returns the score of the game state.
-int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -500, int b = 500) {
+enum AI {
 
-    // If game state is terminal.
-    if (v->data.done) {
+    DEFAULT_AI, AB_AI, UNSET_AI
 
-        // If the max player has won (0 for X and 1 for O).
-        if (v->data.hasWon(maxPlayer)) {
+};
 
-            return 100 - depth; // penalize move score if it takes too long
+class Minimax {
 
-        // If the min player has won (opposite of the max player).
-        } else if (v->data.hasWon(maxPlayer ? 0 : 1)) {
+private:
 
-            return -100;
+    int type;
 
-        // Game ends in tie.
+public:
+
+    Minimax() {
+
+        type = DEFAULT_AI;
+
+    }
+
+    void setType(int type) {
+
+        this->type = type;
+
+    }
+
+    // Function runs recursively and returns the score of the game state.
+    int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -500, int b = 500) {
+
+        if (type == DEFAULT_AI) {
+
+            a = -500;
+            b = 500;
+
+        }
+
+        // If game state is terminal.
+        if (v->data.done) {
+
+            // If the max player has won (0 for X and 1 for O).
+            if (v->data.hasWon(maxPlayer)) {
+
+                return 100 - depth; // penalize move score if it takes too long
+
+            // If the min player has won (opposite of the max player).
+            } else if (v->data.hasWon(maxPlayer ? 0 : 1)) {
+
+                return -100;
+
+            // Game ends in tie.
+            } else {
+
+                return 0;
+
+            }
+
+        }
+
+        // If it is currently the max players turn.
+        if (v->data.currentTurn == maxPlayer) {
+
+            // Set score to a number lower than possible.
+            // Any value will automatically be bigger than this.
+            int score = -500;
+
+            // Iterate through the edge list.
+            for (int i = 0; i < v->edgeList.size(); i++) {
+
+                // The child of the current edge is set to child.
+                Vertex<GameState>* child = v->edgeList[i]->to;
+
+                // Score is set to the max between the current score and the best score from running minimax again.
+                score = std::max(score, minimax(child, maxPlayer, depth + 1, a, b));
+
+                if (score > b) {
+
+                    break;
+
+                }
+
+                a = std::max(a, score);
+
+            }
+
+            return score;
+
+        // else, it is the min players turn.
         } else {
 
-            return 0;
+            // Set the score to a number higher than possible.
+            int score = 500;
 
-        }
+            // Iterate through the edges.
+            for (int i = 0; i < v->edgeList.size(); i++) {
 
-    }
+                // The child of the current edge is stored.
+                Vertex<GameState>* child = v->edgeList[i]->to;
 
-    // If it is currently the max players turn.
-    if (v->data.currentTurn == maxPlayer) {
+                // We set score to the minimum between the current score and the score given by running minimax again
+                score = std::min(score, minimax(child, maxPlayer, depth + 1, a, b));
 
-        // Set score to a number lower than possible.
-        // Any value will automatically be bigger than this.
-        int score = -500;
+                if (score < a) {
 
-        // Iterate through the edge list.
-        for (int i = 0; i < v->edgeList.size(); i++) {
+                    break;
 
-            // The child of the current edge is set to child.
-            Vertex<GameState>* child = v->edgeList[i]->to;
+                }
 
-            // Score is set to the max between the current score and the best score from running minimax again.
-            score = std::max(score, minimax(child, maxPlayer, depth + 1, a, b));
-
-            if (score > b) {
-
-                break;
+                b = std::min(b, score);
 
             }
 
-            a = std::max(a, score);
+            return score;
 
         }
 
-        return score;
+    }
 
-    // else, it is the min players turn.
-    } else {
+    Vec bestMove(Vertex<GameState>* v, int maxPlayer) {
 
-        // Set the score to a number higher than possible.
-        int score = 500;
+        int bestScore = -500;
+        Vertex<GameState>* bestState;
 
-        // Iterate through the edges.
+        // Iterate through all children.
         for (int i = 0; i < v->edgeList.size(); i++) {
 
-            // The child of the current edge is stored.
             Vertex<GameState>* child = v->edgeList[i]->to;
+            int score = minimax(child, maxPlayer);
 
-            // We set score to the minimum between the current score and the score given by running minimax again
-            score = std::min(score, minimax(child, maxPlayer, depth + 1, a, b));
+            //std::cout << "score: " << score << std::endl;
 
-            if (score < a) {
+            // If this score is the best we've seen, set this child to our best state and update score.
+            if (score > bestScore) {
 
-                break;
+                bestState = child;
+
+                bestScore = score;
 
             }
 
-            b = std::min(b, score);
-
         }
 
-        return score;
+        return bestState->data.lastMove;
 
     }
 
-}
-
-Vec bestMove(Vertex<GameState>* v, int maxPlayer) {
-
-    int bestScore = -500;
-    Vertex<GameState>* bestState;
-
-    // Iterate through all children.
-    for (int i = 0; i < v->edgeList.size(); i++) {
-
-        Vertex<GameState>* child = v->edgeList[i]->to;
-        int score = minimax(child, maxPlayer);
-
-        //std::cout << "score: " << score << std::endl;
-
-        // If this score is the best we've seen, set this child to our best state and update score.
-        if (score > bestScore) {
-
-            bestState = child;
-
-            bestScore = score;
-
-        }
-
-    }
-
-    return bestState->data.lastMove;
-
-}
+};
