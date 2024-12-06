@@ -4,30 +4,6 @@
 #include "Graph.h"
 #include "GameState.h"
 
-struct winLoss {
-
-    int winCount;
-    int lossCount;
-
-    winLoss() {
-
-        winCount = 0;
-        lossCount = 0;
-
-    }
-
-public:
-
-    void addWin() {
-        winCount++;
-    }
-
-    void addLoss() {
-        lossCount++;
-    }
-
-};
-
 enum AI {
 
     DEFAULT_AI, AB_AI, UNSET_AI
@@ -40,11 +16,17 @@ private:
 
     int type;
 
+    int winCount;
+    int lossCount;
+
 public:
 
     Minimax() {
 
         type = DEFAULT_AI;
+
+        winCount = 0;
+        lossCount = 0;
 
     }
 
