@@ -8,6 +8,7 @@ enum AIType {
 
     DEFAULT_AI, // choose path with most wins attached
     AB_AI, // prune game tree branches that don't need to be traversed
+    MOSTLOSS, // choose path with most opponent losses attached
     UNSET_AI // nothing set
 
 };
@@ -56,9 +57,10 @@ public:
             // If the max player has won (0 for X and 1 for O).
             if (v->data.hasWon(maxPlayer)) {
 
+                this->winCount++;
+
                 if (this->type == DEFAULT_AI) {
 
-                    this->winCount++;
                     return 100 - depth;
 
                 } else {
@@ -150,6 +152,10 @@ public:
 
                 return score + winCount; // prioritize children with more win conditions
 
+            }else if (score == 0 && this->type == MOSTLOSS) {
+
+                return score + lossCount; // prioritize children with more loss conditions for opponent
+
             }
 
             return score;
@@ -189,7 +195,7 @@ public:
 
     Vec handleMove(Vertex<GameState>* v, int maxPlayer) {
 
-        if (this->type == DEFAULT_AI || this->type == AB_AI) {
+        if (this->type == DEFAULT_AI || this->type == AB_AI || this->type == MOSTLOSS) {
 
             return bestMove(v, maxPlayer);
 
