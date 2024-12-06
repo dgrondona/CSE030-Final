@@ -4,13 +4,13 @@
 #include "Graph.h"
 #include "GameState.h"
 
-enum AI {
+enum AIType {
 
     DEFAULT_AI, AB_AI, UNSET_AI
 
 };
 
-class Minimax {
+class AIPlayer {
 
 private:
 
@@ -21,7 +21,7 @@ private:
 
 public:
 
-    Minimax() {
+    AIPlayer() {
 
         type = DEFAULT_AI;
 
@@ -152,6 +152,19 @@ public:
         }
 
         return bestState->data.lastMove;
+
+    }
+
+    Vec handleMove(Vertex<GameState>* v, int maxPlayer) {
+
+        if (this->type == DEFAULT_AI || this->type == AB_AI) {
+
+            return bestMove(v, maxPlayer);
+
+        }
+
+        std::cerr << "Invalid AI type" << std::endl;
+        return Vec(-1, -1); // this means that the type is invalid
 
     }
 
