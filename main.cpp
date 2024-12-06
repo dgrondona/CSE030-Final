@@ -1,8 +1,28 @@
+//  _____ _           _____               _____          
+// |_   _(_)         |_   _|             |_   _|         
+//   | |  _  ___ ______| | __ _  ___ ______| | ___   ___ 
+//   | | | |/ __|______| |/ _` |/ __|______| |/ _ \ / _ \
+//   | | | | (__       | | (_| | (__       | | (_) |  __/
+//   \_/ |_|\___|      \_/\__,_|\___|      \_/\___/ \___|
+//                                                       
+// ______                             _____                     _                               _____ _                      _        ___  ___            _          _              
+// |  _  \                           |  __ \                   | |                       _     /  ___| |                    (_)       |  \/  |           (_)        | |             
+// | | | |_ __ __ ___   _____ _ __   | |  \/_ __ ___  _ __   __| | ___  _ __   __ _    _| |_   \ `--.| |__   __ _ _ ____   ___ _ __   | .  . | __ _ _ __  _ _ __ ___| | ____ _ _ __ 
+// | | | | '__/ _` \ \ / / _ \ '_ \  | | __| '__/ _ \| '_ \ / _` |/ _ \| '_ \ / _` |  |_   _|   `--. \ '_ \ / _` | '__\ \ / / | '_ \  | |\/| |/ _` | '_ \| | '__/ _ \ |/ / _` | '__|
+// | |/ /| | | (_| |\ V /  __/ | | | | |_\ \ | | (_) | | | | (_| | (_) | | | | (_| |    |_|    /\__/ / | | | (_| | |   \ V /| | | | | | |  | | (_| | | | | | | |  __/   < (_| | |   
+// |___/ |_|  \__,_| \_/ \___|_| |_|  \____/_|  \___/|_| |_|\__,_|\___/|_| |_|\__,_|           \____/|_| |_|\__,_|_|    \_/ |_|_| |_| \_|  |_/\__,_|_| |_| |_|  \___|_|\_\__,_|_|   
+//                                                                                                                                                      _/ |                        
+//                                                                                                                                                     |__/                                                             
+
+// Tic-Tac-Toe; Created by Draven Grondona and Sharvin Manjrekar. Base Project provided by Dr. Angelo Kyrilov.
+
+
 #include <iostream>
 #include "GameState.h"
 #include "Graph.h"
 #include "LinkedList.h"
-#include "MiniMax.h"
+#include "Menu.h"
+#include "AIPlayer.h"
 
 
 using namespace std;
@@ -72,15 +92,6 @@ Vec simpleAI(GameState game) {
 
 }
 
-// Main AI using MiniMax algorithm.
-Vec mainAI(Vertex<GameState>* gameState, int maxPlayer) {
-
-    Vec move = bestMove(gameState, maxPlayer); // update to take max player later
-
-    return move;
-
-}
-
 Vertex<GameState>* buildTree(GameState game) {
 
     Graph<GameState> g;
@@ -132,33 +143,6 @@ Vertex<GameState>* buildTree(GameState game) {
     return start;
 
 }
-
-enum playerType{
-
-    HUMAN, AI, INVALID_PLAYER
-
-};
-
-struct Options {
-
-    int player0;
-    int player1;
-
-    Options() {
-
-        player0 = HUMAN;
-        player1 = HUMAN;
-
-    }
-
-    Options(int player0, int player1) {
-
-        this->player0 = player0;
-        this->player1 = player1;
-
-    }
-
-};
 
 // menu for choosing different game options
 void menu(Options &options) {
@@ -236,14 +220,19 @@ void menu(Options &options) {
 int main(){
 
     Options options;
+    AIPlayer ai;
+
+    ai.setType(MOSTLOSS);
 
     // Setup game tree (Graph<GameState> g)
     GameState game;
 
+    menu(options); // run the menu
+
     Vertex<GameState>* current = buildTree(game); // current vertex is outputted by the buildTree function.
     game = current->data;
 
-    menu(options); // run the menu
+    cout << game << endl;
 
     while (!game.done) { // main game loop
 
@@ -254,7 +243,7 @@ int main(){
         // determine if player is human or AI
         if (options.player0 == AI) {
 
-            player0 = mainAI(current, 0);
+            player0 = ai.handleMove(current, 0);
 
             game.play(player0.x, player0.y);
 
@@ -282,7 +271,7 @@ int main(){
             // determine if player is human or AI
             if (options.player1) {
 
-                player1 = mainAI(current, 1);
+                player1 = ai.handleMove(current, 1);
 
                 game.play(player1.x, player1.y);
 
