@@ -36,6 +36,13 @@ public:
 
     }
 
+    void resetWinLoss() {
+
+        this->winCount = 0;
+        this->lossCount = 0;
+
+    }
+
     // Function runs recursively and returns the score of the game state.
     int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -500, int b = 500) {
 
@@ -45,17 +52,21 @@ public:
             // If the max player has won (0 for X and 1 for O).
             if (v->data.hasWon(maxPlayer)) {
 
+                this->winCount++;
+
                 return 100 - depth; // penalize move score if it takes too long
 
             // If the min player has won (opposite of the max player).
             } else if (v->data.hasWon(maxPlayer ? 0 : 1)) {
+
+                this->lossCount++;
 
                 return -100;
 
             // Game ends in tie.
             } else {
 
-                return 0;
+                return 0 + winCount;;
 
             }
 
@@ -133,6 +144,7 @@ public:
         for (int i = 0; i < v->edgeList.size(); i++) {
 
             Vertex<GameState>* child = v->edgeList[i]->to;
+            resetWinLoss();
             int score = minimax(child, maxPlayer);
 
             //std::cout << "score: " << score << std::endl;
