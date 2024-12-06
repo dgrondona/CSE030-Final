@@ -4,11 +4,16 @@
 #include "Graph.h"
 #include "GameState.h"
 
+#define MAXSCORE 50000
+#define MINSCORE -50000
+#define ALPHA (MAXSCORE + 1000)
+#define BETA (MINSCORE - 1000)
+
 enum AIType {
 
     DEFAULT_AI, // choose path with most wins attached
     AB_AI, // prune game tree branches that don't need to be traversed
-    MOSTLOSS, // choose path with most opponent losses attached
+    MOSTLOSS, // choose path that minimizes opponents wins
     UNSET_AI // nothing set
 
 };
@@ -22,6 +27,8 @@ private:
     int winCount; // number of win conditions found
     int lossCount; // number of loss conditions found
 
+    int depth;
+
 public:
 
     AIPlayer() {
@@ -30,6 +37,8 @@ public:
 
         winCount = 0;
         lossCount = 0;
+
+        depth = 0;
 
     }
 
@@ -47,7 +56,7 @@ public:
     }
 
     // Function runs recursively and returns the score of the game state.
-    int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = -500, int b = 500) {
+    int minimax(Vertex<GameState>* v, int maxPlayer, int depth = 0, int a = ALPHA, int b = BETA) {
 
         // If game state is terminal.
         if (v->data.done) {
@@ -59,22 +68,14 @@ public:
 
                 this->winCount++;
 
-                if (this->type == DEFAULT_AI) {
-
-                    return 100 - depth;
-
-                } else {
-
-                    return 100;
-
-                }
+                return MAXSCORE;
 
             // If the min player has won (opposite of the max player).
             } else if (v->data.hasWon(maxPlayer ? 0 : 1)) {
 
                 this->lossCount++;
 
-                return -100;
+                return MINSCORE;
 
             // Game ends in tie.
             } else {
@@ -90,7 +91,7 @@ public:
 
             // Set score to a number lower than possible.
             // Any value will automatically be bigger than this.
-            int score = -500;
+            int score = BETA;
 
             // Iterate through the edge list.
             for (int i = 0; i < v->edgeList.size(); i++) {
@@ -119,7 +120,7 @@ public:
         } else {
 
             // Set the score to a number higher than possible.
-            int score = 500;
+            int score = ALPHA;
 
             // Iterate through the edges.
             for (int i = 0; i < v->edgeList.size(); i++) {
@@ -142,22 +143,6 @@ public:
 
             }
 
-            // score 100 is a win
-            if (score == 100 && this->type == DEFAULT_AI) {
-
-                return score - depth; // choose shortest path to win
-
-            // score 0 is a tie
-            } else if (score == 0 && this->type == DEFAULT_AI) {
-
-                return score + winCount; // prioritize children with more win conditions
-
-            }else if (score == 0 && this->type == MOSTLOSS) {
-
-                return score + lossCount; // prioritize children with more loss conditions for opponent
-
-            }
-
             return score;
 
         }
@@ -166,17 +151,27 @@ public:
 
     Vec bestMove(Vertex<GameState>* v, int maxPlayer) {
 
-        int bestScore = -500;
+        int bestScore = BETA;
         Vertex<GameState>* bestState;
 
         // Iterate through all children.
         for (int i = 0; i < v->edgeList.size(); i++) {
 
             Vertex<GameState>* child = v->edgeList[i]->to;
+
             resetWinLoss();
             int score = minimax(child, maxPlayer);
 
-            //std::cout << "score: " << score << std::endl;
+            // adjust score based on 
+            if (score == 0 && this->type == DEFAULT_AI) {
+
+                score += winCount; // prioritize children with more win conditions
+
+            }else if (score == 0 && this->type == MOSTLOSS) {
+
+                score -= lossCount; // prioritize children with more loss conditions for opponent
+
+            }
 
             // If this score is the best we've seen, set this child to our best state and update score.
             if (score > bestScore) {

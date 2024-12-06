@@ -222,6 +222,8 @@ int main(){
     Options options;
     AIPlayer ai;
 
+    ai.setType(MOSTLOSS);
+
     // Setup game tree (Graph<GameState> g)
     GameState game;
 
