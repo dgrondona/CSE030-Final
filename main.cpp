@@ -22,7 +22,7 @@
 #include "Graph.h"
 #include "LinkedList.h"
 #include "Menu.h"
-#include "MiniMax.h"
+#include "AIPlayer.h"
 
 
 using namespace std;
@@ -89,17 +89,6 @@ Vec simpleAI(GameState game) {
     }
 
     return Vec(0,0);
-
-}
-
-// Main AI using MiniMax algorithm.
-Vec mainAI(Vertex<GameState>* gameState, int maxPlayer) {
-
-    Minimax m;
-
-    Vec move = m.bestMove(gameState, maxPlayer);
-
-    return move;
 
 }
 
@@ -231,6 +220,7 @@ void menu(Options &options) {
 int main(){
 
     Options options;
+    AIPlayer ai;
 
     // Setup game tree (Graph<GameState> g)
     GameState game;
@@ -251,7 +241,7 @@ int main(){
         // determine if player is human or AI
         if (options.player0 == AI) {
 
-            player0 = mainAI(current, 0);
+            player0 = ai.handleMove(current, 0);
 
             game.play(player0.x, player0.y);
 
@@ -279,7 +269,7 @@ int main(){
             // determine if player is human or AI
             if (options.player1) {
 
-                player1 = mainAI(current, 1);
+                player1 = ai.handleMove(current, 1);
 
                 game.play(player1.x, player1.y);
 
