@@ -11,7 +11,7 @@ GameState rotate(GameState game) {
 
         for (int j = 0; j < n; j++) {
 
-            rotated[j][n - 1 - i] = game[i][j];
+            rotated.grid[j][n - 1 - i] = game.grid[i][j];
 
         }
 
