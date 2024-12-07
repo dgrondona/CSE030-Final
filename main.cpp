@@ -222,7 +222,7 @@ int main(){
     Options options;
     AIPlayer ai;
 
-    ai.setType(MOSTLOSS);
+    ai.setType(KEVIN);
 
     // Setup game tree (Graph<GameState> g)
     GameState game;

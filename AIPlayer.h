@@ -14,6 +14,7 @@ enum AIType {
     DEFAULT_AI, // choose path with most wins attached
     AB_AI, // prune game tree branches that don't need to be traversed
     MOSTLOSS, // choose path that minimizes opponents wins
+    KEVIN, // AI that plays as bad as possible
     UNSET_AI // nothing set
 
 };
@@ -167,11 +168,11 @@ public:
             // adjust score based on 
             if (score == 0 && this->type == DEFAULT_AI) {
 
-                score += winCount; // prioritize children with more win conditions
+                score += this->winCount; // prioritize children with more win conditions
 
             }else if (score == 0 && this->type == MOSTLOSS) {
 
-                score -= lossCount; // prioritize children with more loss conditions for opponent
+                score -= this->lossCount; // prioritize children with more loss conditions for opponent
 
             }
 
@@ -190,11 +191,54 @@ public:
 
     }
 
+    Vec kevinMode(Vertex<GameState>* v, int maxPlayer) {
+
+        int worstScore = ALPHA;
+        Vertex<GameState>* worstState;
+
+        // Iterate through all children.
+        for (int i = 0; i < v->edgeList.size(); i++) {
+
+            Vertex<GameState>* child = v->edgeList[i]->to;
+
+            resetWinLoss();
+            int score = -minimax(child, maxPlayer);
+            score -= this->lossCount;
+
+            std::cout << "score: " << score << "Vec: " << child->data.lastMove << std::endl;
+
+            // If this score is the best we've seen, set this child to our best state and update score.
+            if (score < worstScore) {
+
+                worstState = child;
+
+                worstScore = score;
+
+            }
+
+        }
+
+        std::cout << "worst state: " << worstState->data.lastMove << std::endl;
+
+        return worstState->data.lastMove;
+
+    }
+
+    Vec random(Vertex<GameState>* v, int maxPlayer) {
+
+        return Vec(-1, -1);
+
+    }
+
     Vec handleMove(Vertex<GameState>* v, int maxPlayer) {
 
         if (this->type == DEFAULT_AI || this->type == AB_AI || this->type == MOSTLOSS) {
 
-            return bestMove(v, maxPlayer);
+            return bestMove(v, maxPlayer); // finds the best move
+
+        } else if (this->type == KEVIN) {
+
+            return kevinMode(v, maxPlayer); // finds the worst move
 
         }
 
