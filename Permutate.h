@@ -41,3 +41,23 @@ GameState reflectHorizontal(GameState game) {
     return reflected;
 
 }
+
+// reflects the board accross the vertical
+GameState reflectVertical(GameState game) {
+
+    int n = game.size;
+    GameState reflected;
+
+    for (int i = 0; i < n; i++) {
+
+        for (int j = 0; j < n/2; j++) {
+
+            reflected.grid[i][j] = game.grid[i][n - 1 - j];
+
+        }
+
+    }
+
+    return reflected;
+
+}
