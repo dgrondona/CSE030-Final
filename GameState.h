@@ -62,7 +62,7 @@ struct GameState{
     Vec lastMove;
 
     // Constructor
-    GameState(int size = 3){
+    GameState(int size = 4){
         this->size = size;
         currentTurn = 0;
         turnCount = 0;

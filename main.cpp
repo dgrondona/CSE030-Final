@@ -92,13 +92,12 @@ Vec simpleAI(GameState game) {
 
 }
 
-Vertex<GameState> *buildTree(GameState &game)
+Vertex<GameState> *buildTree(GameState &game, Vertex<GameState> *current)
 {
     Graph<GameState> g;
 
-    // The current state is the root of the tree
-    Vertex<GameState> *start = new Vertex<GameState>(game);
-    g.addVertex(game);
+    // Add the current state as the root of the tree
+    g.addVertex(current);
 
     // Dynamically expand the tree as the game progresses
     while (!game.done)
@@ -113,8 +112,8 @@ Vertex<GameState> *buildTree(GameState &game)
         int maxWinningChances = currentState.countWinningChances(maxPlayer);
         int minWinningChances = currentState.countWinningChances(minPlayer);
 
-        // Store heuristic value based on winning chances
-        currentState.heuristicValue = maxWinningChances - minWinningChances;
+        // Calculate heuristic value based on the difference in winning chances
+        int heuristicValue = maxWinningChances - minWinningChances;
 
         // If the current game state is terminal, break the loop
         if (currentState.done)
@@ -151,7 +150,7 @@ Vertex<GameState> *buildTree(GameState &game)
         }
     }
 
-    return current;
+    return current; // Return the last current state after all moves have been played
 }
 
 // menu for choosing different game options
@@ -227,109 +226,96 @@ void menu(Options &options) {
 
 }
 
-int main(){
-
+int main()
+{
     Options options;
     AIPlayer ai;
 
-    ai.setType(MOSTLOSS);
+    ai.setType(DEFAULT_AI);
 
-    // Setup game tree (Graph<GameState> g)
     GameState game;
 
     menu(options); // run the menu
 
-    Vertex<GameState>* current = buildTree(game); // current vertex is outputted by the buildTree function.
-    game = current->data;
+    Vertex<GameState> *current = new Vertex<GameState>(game);
 
-    cout << game << endl;
+    // Build the tree dynamically after every move
+    while (!game.done)
+    { // main game loop
 
-    while (!game.done) { // main game loop
+        // Get the current game state reference
+        GameState &currentState = current->data;
 
-        // initialize Vec for both players
-        Vec player0;
-        Vec player1;
-
-        // determine if player is human or AI
-        if (options.player0 == AI) {
+        // Check whose turn it is and handle move accordingly
+        Vec player0, player1;
+        if (options.player0 == AI)
+        {
 
             player0 = ai.handleMove(current, 0);
-
             game.play(player0.x, player0.y);
+        }
+        else if (options.player0 == HUMAN)
+        {
 
-        } else if (options.player0 == HUMAN) {
-
-            cout << game << endl; // only output the game before human's turn   !! make sure to update for case where there are 2 AIs !!
-
+            cout << game << endl;
             player0 = askHuman(game);
 
-            while(!game.play(player0.x, player0.y)) {
-
+            while (!game.play(player0.x, player0.y))
+            {
                 cout << "Invalid Move! Try again buddy" << endl;
-
                 player0 = askHuman(game);
-
             }
-
         }
 
-        current = getCurrent(current, player0);
+        // Update current vertex by finding the corresponding child
+        current = buildTree(game, current);
 
-        // check if the game is terminal or not
-        if (!game.done) {
+        // Now the current vertex represents the new game state after player 0's move
 
-            // determine if player is human or AI
-            if (options.player1) {
+        if (!game.done)
+        { 
+
+            if (options.player1 == AI)
+            {
 
                 player1 = ai.handleMove(current, 1);
-
                 game.play(player1.x, player1.y);
-
-            } else {
-
-                cout << game << endl; // only output the game before human's turn
-
+            }
+            else if (options.player1 == HUMAN)
+            {
+                cout << game << endl;
                 player1 = askHuman(game);
 
-                while(!game.play(player1.x, player1.y)) {
-
+                while (!game.play(player1.x, player1.y))
+                {
                     cout << "Invalid Move! Try again buddy" << endl;
-
                     player1 = askHuman(game);
-
                 }
-
             }
 
-            current = getCurrent(current, player1);
-
+            // Update current vertex again after player 1's move
+            current = buildTree(game, current);
         }
-
     }
 
-    // clear terminal
+    // Clear terminal
     system("clear");
 
     cout << game << endl;
 
-    // announce who won once game loop ends
-    if (game.hasWon(0)){
-
+    
+    if (game.hasWon(0))
+    {
         cout << "X wins" << endl;
-
     }
-    else if (game.hasWon(1)){
-
+    else if (game.hasWon(1))
+    {
         cout << "O wins" << endl;
-
     }
-    else {
-
+    else
+    {
         cout << "It's a tie" << endl;
-
     }
-    
-    cout << endl;
-    
+
     return 0;
 }
