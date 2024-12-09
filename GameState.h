@@ -157,6 +157,93 @@ struct GameState{
         return *this;
     }
 
+    int countWinningChances(int player)
+    {
+        int winningChances = 0;
+
+        // Check rows
+        for (int i = 0; i < size; ++i)
+        {
+            int playerCount = 0, emptyCount = 0;
+            for (int j = 0; j < size; ++j)
+            {
+                if (grid[i][j] == player)
+                {
+                    playerCount++;
+                }
+                else if (grid[i][j] == -1)
+                { // -1 represents empty
+                    emptyCount++;
+                }
+            }
+            if (playerCount > 0 && emptyCount > 0 && playerCount + emptyCount == size)
+            {
+                winningChances++;
+            }
+        }
+
+        // Check columns
+        for (int j = 0; j < size; ++j)
+        {
+            int playerCount = 0, emptyCount = 0;
+            for (int i = 0; i < size; ++i)
+            {
+                if (grid[i][j] == player)
+                {
+                    playerCount++;
+                }
+                else if (grid[i][j] == -1)
+                {
+                    emptyCount++;
+                }
+            }
+            if (playerCount > 0 && emptyCount > 0 && playerCount + emptyCount == size)
+            {
+                winningChances++;
+            }
+        }
+
+        // Check main diagonal
+        int playerCountMainDiag = 0, emptyCountMainDiag = 0;
+        for (int i = 0; i < size; ++i)
+        {
+            if (grid[i][i] == player)
+            {
+                playerCountMainDiag++;
+            }
+            else if (grid[i][i] == -1)
+            {
+                emptyCountMainDiag++;
+            }
+        }
+        if (playerCountMainDiag > 0 && emptyCountMainDiag > 0 &&
+            playerCountMainDiag + emptyCountMainDiag == size)
+        {
+            winningChances++;
+        }
+
+        // Check anti-diagonal
+        int playerCountAntiDiag = 0, emptyCountAntiDiag = 0;
+        for (int i = 0; i < size; ++i)
+        {
+            if (grid[i][size - 1 - i] == player)
+            {
+                playerCountAntiDiag++;
+            }
+            else if (grid[i][size - 1 - i] == -1)
+            {
+                emptyCountAntiDiag++;
+            }
+        }
+        if (playerCountAntiDiag > 0 && emptyCountAntiDiag > 0 &&
+            playerCountAntiDiag + emptyCountAntiDiag == size)
+        {
+            winningChances++;
+        }
+
+        return winningChances;
+    }
+
     // Check if specific player has won
     bool hasWon(int player){
         for (int i = 0; i < size; i++){

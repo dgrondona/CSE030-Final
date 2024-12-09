@@ -92,56 +92,66 @@ Vec simpleAI(GameState game) {
 
 }
 
-Vertex<GameState>* buildTree(GameState game) {
-
+Vertex<GameState> *buildTree(GameState &game)
+{
     Graph<GameState> g;
 
-    // Set the starting game state called "start"
-    Vertex<GameState>* start = new Vertex<GameState>(game);
-    g.addVertex(start);
+    // The current state is the root of the tree
+    Vertex<GameState> *start = new Vertex<GameState>(game);
+    g.addVertex(game);
 
-    // Initialize LinkedList to manage vertices
-    LinkedList<Vertex<GameState>*> toExpand;
-    toExpand.append(start);
+    // Dynamically expand the tree as the game progresses
+    while (!game.done)
+    {
 
-    // build tree
-    while (!game.done && !toExpand.isEmpty()){
+        // Get the current game state
+        GameState &currentState = current->data;
 
-        // remove first vertex
-        Vertex<GameState>* v = toExpand.removeFirst();
+        // Evaluate the current game state using the countWinningChances function
+        int maxPlayer = currentState.currentTurn ? 0 : 1; // Max player is 0, Min player is 1
+        int minPlayer = 1 - maxPlayer;
+        int maxWinningChances = currentState.countWinningChances(maxPlayer);
+        int minWinningChances = currentState.countWinningChances(minPlayer);
 
-        // if vertex represents an ongoing game state
-        if(!v->data.done) {
+        // Store heuristic value based on winning chances
+        currentState.heuristicValue = maxWinningChances - minWinningChances;
 
-            // explore possible moves from current state
-            for (int i = 0; i < game.size; i++) {
+        // If the current game state is terminal, break the loop
+        if (currentState.done)
+            break;
 
-                for (int j = 0; j < game.size; j++) {
+        // Explore possible moves from the current state
+        bool moveFound = false;
+        for (int i = 0; i < currentState.size; i++)
+        {
+            for (int j = 0; j < currentState.size; j++)
+            {
+                GameState tempState = currentState;
 
-                    GameState temp = v->data;
-                    bool valid = temp.play(i, j);
+                // Attempt to make a move and check validity
+                if (tempState.play(i, j))
+                {
+                    moveFound = true;
 
-                    if (valid) {
-                        // This was a valid move, so we can create a child vertex
-                        Vertex<GameState>* u = new Vertex<GameState>(temp);
-                        g.addVertex(u);
+                    // Create a new child vertex
+                    Vertex<GameState> *child = new Vertex<GameState>(tempState);
+                    g.addVertex(child);
+                    g.addDirectedEdge(current, child, 0);
 
-                        g.addDirectedEdge(v,u,0);
+                    // Update the current vertex to the child (for the next iteration of dynamic expansion)
+                    current = child;
 
-                        // Add this child to the list of vertices to expand
-                        toExpand.append(u);
-
-                    }
+                    // Once a valid move is found, break out of the loop and proceed
+                    break;
                 }
             }
 
-
+            if (moveFound)
+                break;
         }
-        
     }
 
-    return start;
-
+    return current;
 }
 
 // menu for choosing different game options
